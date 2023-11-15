@@ -41,7 +41,7 @@ async def buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return 
     await query.answer()
 
-    await query.edit_message_text(text=f"Selected option: {query.data}")
+    await query.edit_message_text(text=f"Selected optionss: {query.data}")
 
          
 if __name__ == '__main__': 
