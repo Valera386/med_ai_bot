@@ -1,5 +1,6 @@
 import csv
 import difflib
+import re
 from collections import Counter
 
 def load_csv(file_path):
@@ -21,7 +22,7 @@ def write_file_four(file_path_w, text): #запись топ-10 жалоб
 
     return text
 
-def write_file_two(file_path_w, text): #запись топ-10 жалоб
+def write_file_three(file_path_w, text): #запись 3
     with open(file_path_w, 'w', encoding="utf8") as file:
 
         file.write(f"Жалобы;\n")
@@ -37,6 +38,26 @@ def sort_complaints_by_frequency(complaints):
     sorted_complaints = sorted(complaints_counter.items(), key=lambda x: x[1], reverse=True)
     
     return sorted_complaints
+
+
+def process_sentences(path, file_path_w):    
+    with open(path, newline='', encoding="utf8") as csvfile:
+        with open(file_path_w, 'w', encoding="utf8") as file:
+            file.write(f"Жалобы;\n")
+            reader = csv.DictReader(csvfile, delimiter=";")
+            for row in reader:
+                sentences_space = row['Жалобы']
+                sentences_space = sentences_space.strip().lower()
+                sentences_comma = re.sub(",", " ,", sentences_space).split(',')
+
+                
+                
+                for text_out in sentences_comma:
+                    text_out = text_out.strip()
+                    text_out = f'{text_out}'.replace('  ', '').replace('   ','')
+                    file.write(f'{text_out}, \n')
+                
+            
 
 def filter_sentences(sentences):
     filtered_sentences = [sentence for sentence in sentences if 'нет' not in sentence.lower() and 'не предьявляет' not in sentence.lower() and 'не имеет' not in sentence.lower() and 'не предъявляет' not in sentence.lower()and 'медосмотр' not in sentence.lower()] 
@@ -57,14 +78,22 @@ def find_duplicates(data):
 
     return top_10_duplicates
 
-def list_complaint(file_path):
+def simple_parsing(file_path):
     file_path_write = '/home/log/med_ai_bot_1/med_ai_bot_1/Задание второго этапа Сириус.ИИ/2.Жалобы.csv'
+
+    process_sentences(file_path, file_path_write)
+
+    return process_sentences
+
+
+def list_complaint(file_path):
+    file_path_write = '/home/log/med_ai_bot_1/med_ai_bot_1/Задание второго этапа Сириус.ИИ/3.Жалобы.csv'
 
     data = load_csv(file_path)
 
     sorted_complaints = sort_complaints_by_frequency(data)
 
-    write_file_two(file_path_write, sorted_complaints)
+    write_file_three(file_path_write, sorted_complaints)
 
     return sorted_complaints
 
@@ -88,7 +117,9 @@ if __name__ == "__main__":
     
     top_duplicates = top_ten(file_path_dataset)
 
-    sorted_complaints = list_complaint(file_path_dataset)
+    list_complaint(file_path_dataset)
+
+    simple_parsing(file_path_dataset)
 
     print("Топ-10 повторяющихся жалоб:")
 

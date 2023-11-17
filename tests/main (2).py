@@ -28,19 +28,16 @@ prepositions = [
 #        return 0
 
 
-with open("медицинские_протоколы.csv", newline='', encoding="utf8") as csvfile:
-    with open("t.txt", 'w') as f:
-        with open("m.txt", 'w') as m:
+with open("/home/log/med_ai_bot_1/med_ai_bot_1/database/med.csv", newline='', encoding="utf8") as csvfile:
             reader = csv.DictReader(csvfile, delimiter=";")
             for row in reader:
-                t = row['Жалобы']
-                m.write(f'\n{t}')
                 _space = row['Жалобы']
                 _space = _space.strip().lower()
-                _comma = re.sub(r",", " ,", _space)
-                for x in prepositions:
-                    v = re.sub(rf'{x}', ' ', _comma)
-                    f.write(f'\n{v}')
+                _comma = re.sub(r",", " ,", _space).split(',')
+                for x in _comma:
+                    print(f'{x} ,')
+
+
                #_out = [i for i in _comma.split(",")]
            #for _v in _out:
 
