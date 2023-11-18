@@ -2,6 +2,7 @@ import csv
 import difflib
 import re
 from collections import Counter
+from difflib import SequenceMatcher
 
 def load_csv(file_path):
     data = []
@@ -22,6 +23,15 @@ def write_file_four(file_path_w, text): #запись топ-10 жалоб
 
     return text
 
+
+def write_complaints(file_path_w, complaints):
+    with open(file_path_w, 'w', encoding="utf8") as file:
+
+        file.write("совпадения\n")
+        for c in complaints:
+            file.write(f'{c}')
+
+
 def write_file_three(file_path_w, text): #запись 3
     with open(file_path_w, 'w', encoding="utf8") as file:
 
@@ -38,6 +48,24 @@ def sort_complaints_by_frequency(complaints):
     sorted_complaints = sorted(complaints_counter.items(), key=lambda x: x[1], reverse=True)
     
     return sorted_complaints
+
+
+def compare_complaints(data, top_complaints):
+    data.append(['Совпадение'])
+    for i in range(1, len(data)):
+        data[i].append('0')
+
+    # Проходим по каждой жалобе и сравниваем с топ-10
+    for i in range(1, len(data)):
+        complaint = data[i][0].lower()  # Приводим к нижнему регистру для сравнения
+        for top_complaint in top_complaints:
+            ratio = SequenceMatcher(None, complaint, top_complaint).ratio()
+            # Если коэффициент сходства выше определенного порога (например, 0.8), считаем, что есть совпадение
+            if ratio > 0.8:
+                data[i][-1] = '1'
+                break
+
+    return data
 
 
 def process_sentences(path, file_path_w):    
@@ -112,6 +140,21 @@ def top_ten(file_path): #функция находит топ 10 самых ча
     return top_duplicates
 
 
+def complaints(path, td):  
+    path_w = '/home/log/med_ai_bot_1/med_ai_bot_1/Задание второго этапа Сириус.ИИ/6.Жалобы.csv'
+
+    with open(path, 'r', encoding='utf-8') as file:
+        reader = csv.reader(file)
+        data = list(reader)
+    
+    complaints = compare_complaints(data, td)
+    
+    write_complaints(path_w, complaints) 
+    
+    return complaints
+    
+
+
 if __name__ == "__main__":
     file_path_dataset = '/home/log/med_ai_bot_1/med_ai_bot_1/database/med.csv'
     
@@ -120,6 +163,8 @@ if __name__ == "__main__":
     list_complaint(file_path_dataset)
 
     simple_parsing(file_path_dataset)
+    
+    complaints(file_path_dataset, top_duplicates)
 
     print("Топ-10 повторяющихся жалоб:")
 
@@ -128,7 +173,6 @@ if __name__ == "__main__":
     
     print('\n\n-----------------------------------------------------------\n\n')
 
-    
 
     
     
